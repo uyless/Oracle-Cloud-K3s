@@ -24,7 +24,7 @@ variable "region" {
 }
 variable "control_plane_ocpus" {
   type        = number
-  default     = 3
+  default     = 2
   description = "CPU count for control plane nodes"
 }
 variable "control_plane_memory" {
@@ -34,7 +34,7 @@ variable "control_plane_memory" {
 }
 variable "worker_node_ocpus" {
   type        = number
-  default     = 3
+  default     = 2
   description = "CPU count for worker nodes"
 }
 variable "worker_node_memory" {

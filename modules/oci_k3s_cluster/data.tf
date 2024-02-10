@@ -9,7 +9,7 @@ data "oci_core_images" "os" {
 
 data "oci_identity_availability_domain" "oci_tenancy_availability_domain" {
     compartment_id = var.compartment_id
-    ad_number = 1
+    ad_number = 2
 }
 
 data "oci_identity_compartment" "k3s_compartment" {

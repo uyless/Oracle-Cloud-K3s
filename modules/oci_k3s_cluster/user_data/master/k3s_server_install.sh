@@ -38,12 +38,15 @@ echo "Installing Helm"
 curl -sfL https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | /usr/bin/env bash 
 
 echo "Configure iptables"
-echo "Create private input and output iptable chains"
-iptables -N private-network-chain-input
-iptables -A private-network-chain-input -s ${private_network} -p tcp --dport 6443 -j ACCEPT
 
-iptables -N private-network-chain-output
-iptables -A private-network-chain-output -d ${private_network} -p tcp --dport 6443 -j ACCEPT
+if [[ -n ${private_network} ]]; then
+	echo "Create private input and output iptable chains"
+	iptables -N private-network-chain-input
+	iptables -A private-network-chain-input -s ${private_network} -p tcp --dport 6443 -j ACCEPT
+	
+	iptables -N private-network-chain-output
+	iptables -A private-network-chain-output -d ${private_network} -p tcp --dport 6443 -j ACCEPT
+fi
 
 echo "Create public input and output iptable chains"
 iptables -N public-network-chain-input
@@ -52,10 +55,12 @@ iptables -A public-network-chain-input -s ${public_network} -p tcp --dport 22 -j
 iptables -N public-network-chain-output
 iptables -A public-network-chain-output -d ${public_network} -p tcp --dport 22 -j ACCEPT
 
+if [[ -n ${private_network} ]]; then
+	iptables -I INPUT 1 -s ${private_network} -j private-network-chain-input
+	iptables -I OUTPUT 1 -d ${private_network} -j private-network-chain-output
+fi
 
-iptables -I INPUT 1 -s ${private_network} -j private-network-chain-input
 iptables -I INPUT 1 -s ${public_network} -j public-network-chain-input
-iptables -I OUTPUT 1 -d ${private_network} -j private-network-chain-output
 iptables -I OUTPUT 1 -d ${public_network} -j public-network-chain-output
 
 if [[ "$(kubectl get deployment ingress-nginx-controller -n ingress-nginx --no-headers | wc -l)" == "0" ]]; then

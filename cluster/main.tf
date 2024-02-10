@@ -25,30 +25,30 @@ module "oci_free_network" {
 }
 
 module "oci_k3s_cluster" {
-    source = "../modules/oci_k3s_cluster"
+  source = "../modules/oci_k3s_cluster"
 
-    compartment_id      = module.oci_free_network.free_compartmernt_id
-    tenancy_ocid        = var.tenancy_ocid 
-    availability_domain = var.region
-    
-    control_nodes_count        = 1
-    control_node_ocpus         = var.control_plane_ocpus
-    control_node_memory_in_gbs = var.control_plane_memory
+  compartment_id      = module.oci_free_network.free_compartmernt_id
+  tenancy_ocid        = var.tenancy_ocid 
+  availability_domain = var.region
+  
+  control_nodes_count        = 1
+  control_node_ocpus         = var.control_plane_ocpus
+  control_node_memory_in_gbs = var.control_plane_memory
 
-    worker_nodes_count        = 1
-    worker_node_ocpus         = var.worker_node_ocpus
-    worker_node_memory_in_gbs = var.worker_node_memory
+  worker_nodes_count        = 1
+  worker_node_ocpus         = var.worker_node_ocpus
+  worker_node_memory_in_gbs = var.worker_node_memory
 
-    vcn_id                  = module.oci_free_network.vcn_id
-    public_subnet_id        = module.oci_free_network.public_subnet_id
-    public_subnet_cidr      = module.oci_free_network.public_subnet_cidr
-    subnet_security_list_id = module.oci_free_network.subnet_security_list_id
-    private_subnet_id       = module.oci_free_network.private_subnet_id  
-    private_subnet_cidr     = module.oci_free_network.private_subnet_cidr
-    ssh_authorized_keys     = var.ssh_authorized_keys
+  vcn_id                  = module.oci_free_network.vcn_id
+  public_subnet_id        = module.oci_free_network.public_subnet_id
+  public_subnet_cidr      = module.oci_free_network.public_subnet_cidr
+  subnet_security_list_id = module.oci_free_network.subnet_security_list_id
+  #private_subnet_id       = module.oci_free_network.private_subnet_id  
+  #private_subnet_cidr     = module.oci_free_network.private_subnet_cidr
+  ssh_authorized_keys     = var.ssh_authorized_keys
 
-    linux_user               = var.linux_user
-    linux_user_password_hash = var.linux_user_password_hash
+  linux_user               = var.linux_user
+  linux_user_password_hash = var.linux_user_password_hash
 }
 
 output "external_loadbalancer_ip" {

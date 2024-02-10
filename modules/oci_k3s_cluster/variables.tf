@@ -110,11 +110,13 @@ variable "availability_domain" {
 variable "private_subnet_id" {
   description = "The OCID of the subnet to create the VNIC in."
   type        = string
+  default     = ""
 }
 
 variable "private_subnet_cidr" {
   description = "The cidr of private subnet"
   type        = string
+  default     = ""
 }
 
 variable "public_subnet_id" {

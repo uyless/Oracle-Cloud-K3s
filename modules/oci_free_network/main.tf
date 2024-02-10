@@ -42,10 +42,10 @@ output "subnet_security_list_id" {
   value = oci_core_security_list.public_security_list.id
 }
 
-output "private_subnet_id" {
-  value = oci_core_subnet.private_subnet.id
-}
+#output "private_subnet_id" {
+#  value = oci_core_subnet.private_subnet.id
+#}
 
-output "private_subnet_cidr" {
-  value = oci_core_subnet.private_subnet.cidr_block
-}
+#output "private_subnet_cidr" {
+#  value = oci_core_subnet.private_subnet.cidr_block
+#}

@@ -57,11 +57,11 @@ resource "oci_core_instance" "worker_node_instance" {
   }
 
   create_vnic_details {
-    display_name           = "private-nic"
+    display_name           = "public-nic"
     hostname_label         = each.key
-    subnet_id              = var.private_subnet_id
+    subnet_id              = var.public_subnet_id
     assign_public_ip       = false
-    private_ip             = cidrhost(var.private_subnet_cidr, 10 + each.value)
+    private_ip             = cidrhost(var.public_subnet_cidr, 10 + each.value)
     skip_source_dest_check = true
   }
 

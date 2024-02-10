@@ -92,7 +92,7 @@ data "cloudinit_config" "k3s_master" {
     content_type = "text/x-shellscript"
     content = templatefile("${path.module}/user_data/master/k3s_server_install.sh", {
       cluster_token           = random_password.cluster_token.result,
-      control_node_private_ip = cidrhost(var.private_subnet_cidr, 2 + each.value),
+      control_node_private_ip = var.private_subnet_cidr != "" ? cidrhost(var.private_subnet_cidr, 2 + each.value) : cidrhost(var.public_subnet_cidr, 2 + each.value),
       private_network         = var.private_subnet_cidr,
       public_network          = var.public_subnet_cidr,
       k3s_version             = var.k3s_version
@@ -100,47 +100,47 @@ data "cloudinit_config" "k3s_master" {
   }
 }
 
-resource "oci_core_instance_configuration" "control_plane_instance_configuration" {
-  compartment_id = var.compartment_id
-  display_name = "k3s_control_plane"
-
-
-  instance_details {
-    instance_type = "compute"
-
-    launch_details {
-      compartment_id      = var.compartment_id
-      shape               = "VM.Standard.A1.Flex"
-      availability_domain = data.oci_identity_availability_domain.oci_tenancy_availability_domain.name
-
-      shape_config {
-        ocpus         = var.control_node_ocpus
-        memory_in_gbs = var.control_node_memory_in_gbs
-      }
-
-      create_vnic_details {
-        display_name     = "primaryvnic"
-        subnet_id        = var.public_subnet_id
-        assign_public_ip = true
-      }
-    
-      source_details {
-        source_type = "image"
-        image_id    = lookup(data.oci_core_images.os.images[0], "id")
-
-        boot_volume_size_in_gbs = var.boot_volume_size_in_gbs
-      }
-
-      #launch_options {
-      #  boot_volume_type = "ISCSI"
-      #}
-    }
-  }
-
-  lifecycle {
-    create_before_destroy = true
-  }
-}
+#resource "oci_core_instance_configuration" "control_plane_instance_configuration" {
+#  compartment_id = var.compartment_id
+#  display_name = "k3s_control_plane"
+#
+#
+#  instance_details {
+#    instance_type = "compute"
+#
+#    launch_details {
+#      compartment_id      = var.compartment_id
+#      shape               = "VM.Standard.A1.Flex"
+#      availability_domain = data.oci_identity_availability_domain.oci_tenancy_availability_domain.name
+#
+#      shape_config {
+#        ocpus         = var.control_node_ocpus
+#        memory_in_gbs = var.control_node_memory_in_gbs
+#      }
+#
+#      create_vnic_details {
+#        display_name     = "primaryvnic"
+#        subnet_id        = var.public_subnet_id
+#        assign_public_ip = true
+#      }
+#    
+#      source_details {
+#        source_type = "image"
+#        image_id    = lookup(data.oci_core_images.os.images[0], "id")
+#
+#        boot_volume_size_in_gbs = var.boot_volume_size_in_gbs
+#      }
+#
+#      #launch_options {
+#      #  boot_volume_type = "ISCSI"
+#      #}
+#    }
+#  }
+#
+#  lifecycle {
+#    create_before_destroy = true
+#  }
+#}
 
 resource "oci_core_instance" "control_plane_instance" {  
   for_each = { for i in range(var.control_nodes_count): "k3s-control-${i}" => i }
@@ -159,11 +159,11 @@ resource "oci_core_instance" "control_plane_instance" {
   }
 
   create_vnic_details {
-    display_name           = "primary nic"
+    display_name           = "public nic"
     hostname_label         = each.key
-    subnet_id              = var.private_subnet_id
+    subnet_id              = var.public_subnet_id
     assign_public_ip       = false
-    private_ip             = cidrhost(var.private_subnet_cidr, 2 + each.value)
+    private_ip             = cidrhost(var.public_subnet_cidr, 2 + each.value)
     skip_source_dest_check = false
   } 
 
