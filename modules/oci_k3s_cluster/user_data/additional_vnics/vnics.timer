@@ -1,0 +1,9 @@
+[Unit]
+Description=Vnics timer
+
+[Timer]
+OnCalendar=*:0/15
+Unit=vnics.service
+
+[Install]
+WantedBy=multi-user.target

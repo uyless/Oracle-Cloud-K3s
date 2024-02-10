@@ -1,0 +1,33 @@
+write_files:
+  - encoding: b64
+    path: /var/lib/rancher/k3s/server/manifests/cloud-controller-daemonset.yaml
+    permission: '0600'
+    content: ${cloud_controller_daemonset_yaml}
+  - encoding: b64
+    path: /var/lib/rancher/k3s/server/manifests/cloud-controller-rbac.yaml
+    permission: '0600'
+    content: ${cloud_controller_rbac_yaml}
+  - encoding: b64
+    path: /var/lib/rancher/k3s/server/manifests/cloud-controller-config.yaml
+    permission: '0600'
+    content: ${cloud_controller_config_secret_yaml}
+  - encoding: b64
+    path: /var/lib/rancher/k3s/server/manifests/oci-csi-controller-config.yaml
+    permission: '0600'
+    content: ${csi_controller_config_secret_yaml}
+  - encoding: b64
+    path: /var/lib/rancher/k3s/server/manifests/oci-csi-controller-driver.yaml
+    permission: '0600'
+    content: ${csi_controller_driver_yaml}
+  - encoding: b64
+    path: /var/lib/rancher/k3s/server/manifests/oci-csi-node-driver.yaml
+    permission: '0600'
+    content: ${csi_node_driver_yaml}
+  - encoding: b64
+    path: /var/lib/rancher/k3s/server/manifests/oci-csi-node-rbac.yaml
+    permission: '0600'
+    content: ${csi_node_rbac_yaml}
+  - encoding: b64
+    path: /var/lib/rancher/k3s/server/manifests/storage-class.yaml
+    permission: '0600'
+    content: ${storage_class}    

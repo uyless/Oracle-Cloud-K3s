@@ -1,0 +1,53 @@
+#cloud-config
+# Make password hash with 'mkpasswd -m sha-512'
+
+users:
+  - default
+  - name: "${user_name}"
+    passwd: "${user_password_hash}"
+    shell: /bin/bash
+    lock-passwd: false
+    ssh_pwauth: false
+    chpasswd: { expire: False }
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    groups: users, admin
+    ssh_authorized_keys:
+     - ${ssh_key}
+
+package_upgrade: true
+packages:
+  - curl
+  - net-tools
+  - wget
+  - jq
+
+snap:
+  commands:
+    - snap install kubectx --classic
+
+write_files:
+  - encoding: b64
+    path: /etc/systemd/system/vnics.service
+    permission: "0644"
+    content: ${secondary_vnic_service}
+  - encoding: b64
+    path: /etc/systemd/system/vnics.timer
+    permission: "0644"
+    content: ${secondary_vnic_timer}
+  - encoding: b64
+    path: /etc/rancher/k3s/resolv.conf
+    permission: '0640'
+    content: ${resolv_conf}    
+
+
+runcmd:
+  - curl -sL https://docs.oracle.com/iaas/Content/Resources/Assets/secondary_vnic_all_configure.sh -o /usr/sbin/secondary_vnic_all_configure.sh
+  - chmod u+x /usr/sbin/secondary_vnic_all_configure.sh
+  - systemctl enable vnics.service
+  - systemctl enable vnics.timer
+  - systemctl start vnics.service
+  - ufw allow 6443/tcp
+  - ufw allow from 10.42.0.0/16 to any
+  - ufw allow from 10.43.0.0/16 to any
+
+  

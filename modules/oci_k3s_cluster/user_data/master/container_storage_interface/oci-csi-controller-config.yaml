@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: oci-volume-provisioner
+  namespace: kube-system
+type: Opaque
+stringData:
+  config.yaml: |
+    useInstancePrincipals: true
+
+    # compartment configures Compartment within which the cluster resides.
+    compartment: ${compartment_id}
+
+    # Optional rate limit controls for accessing OCI API
+    rateLimiter:
+      rateLimitQPSRead: 20.0
+      rateLimitBucketRead: 5
+      rateLimitQPSWrite: 20.0
+      rateLimitBucketWrite: 5
